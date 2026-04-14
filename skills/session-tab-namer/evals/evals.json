@@ -1,0 +1,26 @@
+{
+  "skill_name": "session-tab-namer",
+  "evals": [
+    {
+      "id": 0,
+      "name": "build-embabel-multi-agent",
+      "prompt": "help me set up a multi-agent flow in embabel — I want one supervisor agent that delegates to two worker agents, one for retrieval and one for synthesis",
+      "expected_output": "Model should emit a Bash command containing `printf '\\033]0;<name>\\007' > /dev/tty` where <name> follows <prefix>:<kebab-description> format, uses a build-ish prefix (build/refactor/implement/scaffold), and references embabel and multi-agent concretely (e.g. build:embabel-multi-agent)",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "research-vectordb-tradeoffs",
+      "prompt": "can you research the tradeoffs between Pinecone, Weaviate, and Qdrant for our use case? we're storing around 10M embeddings and need hybrid search (dense + sparse)",
+      "expected_output": "Bash command with OSC 0 escape and /dev/tty redirect, tab name with research-ish prefix (research/explore/compare) and description referencing vector DBs concretely (e.g. research:vectordb-tradeoffs, compare:pinecone-weaviate-qdrant)",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "debug-ecr-auth-failure",
+      "prompt": "our deploy pipeline just started failing this morning with a cryptic ECR auth error — 'no basic auth credentials' — it was working yesterday. help me figure out what changed",
+      "expected_output": "Bash command with OSC 0 escape and /dev/tty redirect, tab name with debug-ish prefix (debug/fix/investigate) and description referencing the ECR auth failure (e.g. debug:ecr-auth-failure, fix:deploy-ecr-auth)",
+      "files": []
+    }
+  ]
+}
