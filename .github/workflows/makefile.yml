@@ -1,4 +1,4 @@
-name: Makefile CI
+name: CI
 
 on:
   push:
@@ -7,21 +7,26 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  lint-and-test:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: configure
-      run: ./configure
+      - name: Install jq and shellcheck
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq shellcheck
 
-    - name: Install dependencies
-      run: make
+      - name: Lint shell scripts with shellcheck
+        run: |
+          shellcheck \
+            skills/session-tab-namer/scripts/install.sh \
+            skills/session-tab-namer/scripts/uninstall.sh \
+            skills/session-tab-namer/scripts/session_start_hook.sh \
+            tests/install_test.sh
 
-    - name: Run check
-      run: make check
+      - name: Run hook smoke-test (make test)
+        run: make test
 
-    - name: Run distcheck
-      run: make distcheck
+      - name: Run installer integration test
+        run: bash tests/install_test.sh

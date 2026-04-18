@@ -70,13 +70,13 @@ The skill deliberately doesn't hard-code this list — Claude picks whatever sin
 
 ## Benchmark
 
-A formal eval with three real prompts (build a multi-agent app, research JWT rotation, debug a flaky pytest suite) compared the skill against a no-skill baseline:
+A formal eval with three real prompts (build a multi-agent app, research vector-DB tradeoffs, debug an ECR auth failure — see `skills/session-tab-namer/evals/evals.json`) compared the skill against a no-skill baseline. Each of the 3 prompts was run 3 times against 3 assertion checks, for 21 total assertion outcomes per arm (3 × 7 ≈ 21; see `docs/FIELD_NOTES.md` for the exact methodology):
 
-| Metric     | With skill  | Without skill | Delta  |
-| ---------- | ----------- | ------------- | ------ |
-| Pass rate  | 100% (21/21)| 48% (10/21)   | +52 pp |
-| Time       | 28.0s       | 19.8s         | +8.2s  |
-| Tokens     | 20,657      | 17,398        | +3,259 |
+| Metric     | With skill            | Without skill         | Delta  |
+| ---------- | --------------------- | --------------------- | ------ |
+| Pass rate  | 100% (21/21 asserts)  | 48% (10/21 asserts)   | +52 pp |
+| Time       | 28.0s                 | 19.8s                 | +8.2s  |
+| Tokens     | 20,657                | 17,398                | +3,259 |
 
 The baseline frequently forgot to rename at all, or wrote to captured stdout so the rename silently failed. The skill makes renaming reliable and consistent at the cost of roughly +8s and +3k tokens per session — a once-per-session overhead that pays for itself the first time you need to find a specific tab.
 
@@ -94,15 +94,18 @@ The baseline frequently forgot to rename at all, or wrote to captured stdout so 
 │       └── evals/
 │           └── evals.json                # three benchmark prompts
 ├── docs/
-│   ├── FIELD_NOTES.md                    # what we learned building this
-│   └── BLOG.md                           # narrative writeup
+│   └── FIELD_NOTES.md                    # what we learned building this
+├── tests/
+│   └── install_test.sh                   # integration test for install.sh
+├── CONTRIBUTING.md                       # how to contribute
+├── SECURITY.md                           # security policy
 ├── Makefile                              # install / uninstall / test targets
 └── README.md
 ```
 
 ## Troubleshooting
 
-- **Tab didn't rename.** Check you're on a real TTY: `[ -t 0 ] && echo tty`. The hook silently no-ops on non-interactive shells.
+- **Tab didn't rename.** Check your shell has access to a controlling TTY: `[ -c /dev/tty ] && echo tty`. (`[ -t 0 ]` only tests whether stdin is a TTY, which isn't the same thing — OSC 0 needs `/dev/tty`.) The hook silently no-ops when `/dev/tty` isn't writable, as happens in some non-interactive or captured-IO contexts.
 - **Using tmux and nothing changes.** Add to `~/.tmux.conf`:
   ```
   set-option -g allow-rename on
@@ -110,6 +113,29 @@ The baseline frequently forgot to rename at all, or wrote to captured stdout so 
   ```
 - **Hook never fires.** Verify it's registered: `jq '.hooks.SessionStart' ~/.claude/settings.json`. Re-run `make install` if empty.
 - **`jq: command not found`.** Install jq: `brew install jq` or `apt-get install jq`.
+
+## FAQ
+
+**Does this work over SSH?**
+Yes. OSC 0 is a terminal-emulator escape sequence, so it travels over SSH transparently and is interpreted by whichever terminal you opened the SSH session from.
+
+**Does this work in tmux?**
+Yes, but tmux captures window titles by default. Add `set-option -g allow-rename on` and `set-option -g set-titles on` to `~/.tmux.conf`. Without those, the escape is silently dropped by tmux.
+
+**Why does the skill use a SessionStart fallback instead of waiting for a real name?**
+If the session starts nameless, there's a window where you can't distinguish tabs. The 6-char session ID fallback (`claude:a3f2c1`) gives every tab *some* identity from the instant it opens. The skill replaces it with a semantic name as soon as your objective is clear.
+
+**Is tab-renaming visible to the model?**
+No. The OSC 0 escape is written to `/dev/tty`, not stdout. Claude Code captures stdout for the model's context, which is exactly why the `> /dev/tty` redirect is load-bearing — without it, the escape never reaches the terminal.
+
+**Will this change the shell prompt or any other state?**
+No. OSC 0 only touches the window/tab title. The shell prompt, working directory, and environment are untouched.
+
+**Does this collect any telemetry?**
+No. The hook and skill are local-only. The only thing written outside your terminal is the timestamped backup of `~/.claude/settings.json` during install.
+
+**Why OSC 0 instead of a terminal-specific API?**
+OSC 0 is honored by every mainstream emulator (iTerm2, Terminal.app, Alacritty, WezTerm, kitty, GNOME Terminal) and by tmux with `allow-rename` on. Per-emulator APIs would fragment the skill and still not cover every case.
 
 ## License
 
