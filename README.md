@@ -5,7 +5,7 @@ A [Claude Code](https://claude.com/claude-code) skill + `SessionStart` hook that
 Instead of staring at a row of identical `claude` tabs wondering which is which, you get tabs like:
 
 ```
-build:embabel-multi-agent    research:jwt-rotation    debug:pytest-flaky    write:cortex-q2-prd
+build:embabel-multi-agent    research:jwt-rotation    debug:pytest-flaky    write:payments-q2-prd
 ```
 
 Works in iTerm2, Terminal.app, cmux, WezTerm, kitty, Alacritty, GNOME Terminal, and tmux (with `allow-rename on`).

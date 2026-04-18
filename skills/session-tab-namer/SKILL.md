@@ -50,7 +50,7 @@ Important: do **not** print the escape sequence into normal tool stdout. Claude 
 | "help me set up a multi-agent flow in embabel" | `build:embabel-multi-agent` | Project + what's being built |
 | "figure out how JWT rotation works in practice" | `research:jwt-rotation` | Research prefix, concrete topic |
 | "this pytest suite is flaking, help me find why" | `debug:pytest-flaky` | Debug prefix, specific symptom |
-| "write the Q2 PRD for Cortex" | `write:cortex-q2-prd` | Project + artifact |
+| "write the Q2 PRD for the payments service" | `write:payments-q2-prd` | Project + artifact |
 | "review the auth middleware PR" | `review:auth-middleware-pr` | Review prefix, object |
 | (no objective yet, fresh session) | `claude:a3f2c1` | Fallback from hook, session-id based |
 
@@ -58,7 +58,7 @@ Important: do **not** print the escape sequence into normal tool stdout. Claude 
 
 - `build:stuff` — too generic, indistinguishable from other tabs
 - `BUILD:Embabel_Multi_Agent_System` — caps and underscores waste visual space
-- `building-a-multi-agent-system-in-embabel-for-the-cortex-project` — truncates to garbage
+- `building-a-multi-agent-system-in-embabel-for-the-payments-project` — truncates to garbage
 - `session-12` — not semantic; the hook's fallback is already better
 
 ## How to rename the tab
