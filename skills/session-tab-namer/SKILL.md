@@ -63,13 +63,13 @@ Important: do **not** print the escape sequence into normal tool stdout. Claude 
 
 ## How to rename the tab
 
-Single Bash command:
+Single Bash call — renames the tab AND persists the name so other tools can read it:
 
 ```bash
-printf '\033]0;build:embabel-multi-agent\007' > /dev/tty
+TAB_NAME="build:embabel-multi-agent" && printf '\033]0;%s\007' "$TAB_NAME" > /dev/tty && sid="" && [[ -n "${CLAUDE_TAB_SESSION_FILE:-}" && -s "$CLAUDE_TAB_SESSION_FILE" ]] && sid=$(<"$CLAUDE_TAB_SESSION_FILE") ; [[ -n "${sid:-}" ]] && mkdir -p ~/.claude/session-names && printf '%s' "$TAB_NAME" > ~/.claude/session-names/"$sid"
 ```
 
-No confirmation needed — renaming is free and reversible, and the user is expecting it. After renaming, briefly tell the user in one line what the tab is now called, e.g.:
+Replace `build:embabel-multi-agent` with the actual name. Both the rename and persist MUST happen in a single Bash call — never split them. No confirmation needed — renaming is free and reversible, and the user is expecting it. After renaming, briefly tell the user in one line what the tab is now called, e.g.:
 
 > Named this tab `build:embabel-multi-agent` — just ask if you'd like it changed.
 

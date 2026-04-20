@@ -21,6 +21,41 @@
       "prompt": "our deploy pipeline just started failing this morning with a cryptic ECR auth error — 'no basic auth credentials' — it was working yesterday. help me figure out what changed",
       "expected_output": "Bash command with OSC 0 escape and /dev/tty redirect, tab name with debug-ish prefix (debug/fix/investigate) and description referencing the ECR auth failure (e.g. debug:ecr-auth-failure, fix:deploy-ecr-auth)",
       "files": []
+    },
+    {
+      "id": 3,
+      "name": "vague-opening-prompt",
+      "prompt": "hey, can you help me with something?",
+      "expected_output": "Model should NOT emit a tab rename command yet — the objective is unclear. Should either ask what the user needs help with, or wait for more context. If it does rename, the name should be generic like 'claude:help' rather than hallucinating a topic. The key assertion: no premature rename with a fabricated description.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "explicit-rename-request",
+      "prompt": "rename this tab to ops:prod-migration-042",
+      "expected_output": "Model should immediately emit a Bash command with the OSC 0 escape writing exactly 'ops:prod-migration-042' (or very close — the user specified the name). Should not debate the name, offer alternatives, or ask for confirmation. The persist command to ~/.claude/session-names/ should also fire.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "multi-objective-session",
+      "prompt": "I need to do two things: first review the PR for the auth refactor, then write the migration guide for v3. Let's start with the PR review.",
+      "expected_output": "Model should name the tab based on the FIRST/CURRENT objective, not try to capture both. Expected: review-ish prefix with auth-refactor reference (e.g. review:auth-refactor-pr). Should not produce a compound name like 'review-and-write:auth-migration'.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "objective-shift-mid-session",
+      "prompt": "actually forget the API docs, the staging deploy is on fire — 500s across all endpoints since the last release. let's triage that instead",
+      "expected_output": "Model should rename the tab to reflect the new objective, replacing whatever was there before. Expected: debug/triage/fix prefix with staging or deploy reference (e.g. debug:staging-500s, triage:deploy-regression). The key assertion: the model recognizes the objective shift and issues a NEW rename.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "non-code-session",
+      "prompt": "I want to write a blog post about how we migrated from Redis to DragonflyDB and what we learned",
+      "expected_output": "Model should emit a tab rename with a write-ish prefix (write/draft/author) and a concrete description referencing the blog topic (e.g. write:redis-to-dragonfly-blog, write:dragonfly-migration-post). Should not default to build: just because content creation is happening.",
+      "files": []
     }
   ]
 }

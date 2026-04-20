@@ -25,6 +25,8 @@ printf '\033]0;build:embabel-multi-agent\007' > /dev/tty
 
 The `> /dev/tty` redirect is load-bearing: Claude Code captures Bash stdout, so without it the escape never reaches the terminal's window manager.
 
+Tab names are also persisted to `~/.claude/session-names/<session-id>` so other tools and hooks can read the current session's name.
+
 ## Install
 
 Requires `jq` (`brew install jq` / `apt-get install jq`).
@@ -70,7 +72,7 @@ The skill deliberately doesn't hard-code this list — Claude picks whatever sin
 
 ## Benchmark
 
-A formal eval with three real prompts (build a multi-agent app, research vector-DB tradeoffs, debug an ECR auth failure — see `skills/session-tab-namer/evals/evals.json`) compared the skill against a no-skill baseline. Each of the 3 prompts was run 3 times against 3 assertion checks, for 21 total assertion outcomes per arm (3 × 7 ≈ 21; see `docs/FIELD_NOTES.md` for the exact methodology):
+A formal eval with 8 prompts covering core flows (build, research, debug), edge cases (vague prompts, explicit renames, objective shifts, multi-objective sessions, non-code work) — see `skills/session-tab-namer/evals/evals.json`. The original 3-prompt benchmark compared with-skill vs without-skill baselines (3 prompts × 3 runs × 7 checks = 21 assertions per arm):
 
 | Metric     | With skill            | Without skill         | Delta  |
 | ---------- | --------------------- | --------------------- | ------ |
