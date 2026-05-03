@@ -29,6 +29,21 @@ Tab names are also persisted to `~/.claude/session-names/<session-id>` so other 
 
 ## Install
 
+### Option A: Claude Code plugin (recommended)
+
+```bash
+claude plugin marketplace add mathewtbenjamin/session-tab-namer
+claude plugin install session-tab-namer@session-tab-namer
+```
+
+Then register the SessionStart hook (requires `jq`):
+
+```bash
+bash ~/.claude/plugins/cache/session-tab-namer/session-tab-namer/*/skills/session-tab-namer/scripts/install.sh
+```
+
+### Option B: Manual install
+
 Requires `jq` (`brew install jq` / `apt-get install jq`).
 
 ```bash
@@ -45,6 +60,18 @@ That will:
 Open a new Claude Code session. The tab should immediately read `claude:<6-char-id>`. Tell Claude what you're working on and the tab will rebrand itself to something like `build:embabel-multi-agent`.
 
 ## Uninstall
+
+### Plugin install
+
+Remove the hook from `settings.json` first, then uninstall:
+
+```bash
+bash ~/.claude/plugins/cache/session-tab-namer/session-tab-namer/*/skills/session-tab-namer/scripts/uninstall.sh
+claude plugin uninstall session-tab-namer@session-tab-namer
+claude plugin marketplace remove session-tab-namer
+```
+
+### Manual install
 
 ```bash
 make uninstall
@@ -72,7 +99,7 @@ The skill deliberately doesn't hard-code this list — Claude picks whatever sin
 
 ## Benchmark
 
-A formal eval with 8 prompts covering core flows (build, research, debug), edge cases (vague prompts, explicit renames, objective shifts, multi-objective sessions, non-code work) — see `skills/session-tab-namer/evals/evals.json`. The original 3-prompt benchmark compared with-skill vs without-skill baselines (3 prompts × 3 runs × 7 checks = 21 assertions per arm):
+3 core prompts (build, research, debug) benchmarked with-skill vs without-skill baselines (3 prompts × 3 runs × 7 checks = 21 assertions per arm). 5 additional edge-case prompts (vague prompts, explicit renames, objective shifts, multi-objective sessions, non-code work) are documented in `skills/session-tab-namer/evals/evals.json` for future runs.
 
 | Metric     | With skill            | Without skill         | Delta  |
 | ---------- | --------------------- | --------------------- | ------ |
@@ -86,6 +113,9 @@ The baseline frequently forgot to rename at all, or wrote to captured stdout so 
 
 ```
 .
+├── .claude-plugin/
+│   ├── plugin.json                       # plugin manifest for marketplace
+│   └── marketplace.json                  # marketplace manifest
 ├── skills/
 │   └── session-tab-namer/
 │       ├── SKILL.md                      # skill body Claude reads
@@ -94,11 +124,12 @@ The baseline frequently forgot to rename at all, or wrote to captured stdout so 
 │       │   ├── install.sh                # registers hook in settings.json
 │       │   └── uninstall.sh              # removes hook from settings.json
 │       └── evals/
-│           └── evals.json                # three benchmark prompts
+│           └── evals.json                # eight benchmark prompts
 ├── docs/
 │   └── FIELD_NOTES.md                    # what we learned building this
 ├── tests/
 │   └── install_test.sh                   # integration test for install.sh
+├── demo.tape                             # VHS recording script for demo GIF
 ├── CONTRIBUTING.md                       # how to contribute
 ├── SECURITY.md                           # security policy
 ├── Makefile                              # install / uninstall / test targets

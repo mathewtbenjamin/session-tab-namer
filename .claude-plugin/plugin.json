@@ -1,0 +1,13 @@
+{
+  "name": "session-tab-namer",
+  "description": "Auto-names terminal tabs for every Claude Code session based on task intent (build:*, research:*, debug:*). Includes a SessionStart hook for instant fallback naming.",
+  "version": "1.0.0",
+  "author": {
+    "name": "mathewtbenjamin"
+  },
+  "homepage": "https://github.com/mathewtbenjamin/session-tab-namer",
+  "repository": "https://github.com/mathewtbenjamin/session-tab-namer",
+  "license": "MIT",
+  "keywords": ["terminal", "tabs", "naming", "session", "productivity", "hook"],
+  "skills": ["./skills/session-tab-namer"]
+}
